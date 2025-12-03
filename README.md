@@ -99,6 +99,6 @@ wget -O installer.sh https://raw.githubusercontent.com/NiL070/oddloop/main/insta
 
 
 <p align="center">
-  <a><img src="https://img.shields.io/badge/Copyright%20©-Onyx%20AutoScriptVPN%202023.%20All%20rights%20reserved...-blueviolet.svg" style="max-width:200%;">
+  <a><img src="https://img.shields.io/badge/Copyright%20©-NiLphreakz%20AutoScriptVPN%202023.%20All%20rights%20reserved...-blueviolet.svg" style="max-width:200%;">
     </p>
    </p>
