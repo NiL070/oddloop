@@ -20,7 +20,7 @@
 
 ## ⚠️ System Requirements ⚠️
 1. Minimum 512MB
-2. Support for Debian/Ubuntu Latest Version
+2. Support for OS Debian/Ubuntu Latest Version
 3. Recommended Debian for fast installation.
 4. Tested On Vps Digital Ocean
 5. Remake old script for 2025-2026
