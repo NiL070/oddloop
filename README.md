@@ -17,13 +17,16 @@
   3. Edge Certificates > Disable Always Use HTTPS : OFF
   4. UNDER ATTACK MODE : OFF
   5. WEBSOCKET : ON
-  
+
 ## ⚠️ System Requirements ⚠️
 1. Minimum 512MB
 2. Recommended Debian for fast installation.
 3. Tested On Vps Digital Ocean
 4. Remake old script for 2025-2026
-
+ 
+ ♦️THIS SCRIPT HAS 2 VERSION♦️
+ 1. VERSION 2.0 USING OLD XRAYCORE MOD 1.7.2-1 SUPPORT MULTIPATH
+ 2. VERSION 3.0 USING LATEST XRAYCORE MOD 25.10.15 SUPPORT MULTIPATH + NEW SERVICES
 
  🔰JUST COPY PASTE THIS COMMAND TO YOUR VPS🔰
  
