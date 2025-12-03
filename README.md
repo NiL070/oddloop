@@ -20,9 +20,10 @@
 
 ## ⚠️ System Requirements ⚠️
 1. Minimum 512MB
-2. Recommended Debian for fast installation.
-3. Tested On Vps Digital Ocean
-4. Remake old script for 2025-2026
+2. Support for Debian/Ubuntu Latest Version
+3. Recommended Debian for fast installation.
+4. Tested On Vps Digital Ocean
+5. Remake old script for 2025-2026
  
  ♦️THIS SCRIPT HAS 2 VERSION♦️
  1. VERSION 2.0 USING OLD XRAYCORE MOD 1.7.2-1 SUPPORT MULTIPATH
