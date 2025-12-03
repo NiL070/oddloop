@@ -80,6 +80,8 @@ wget -O installer.sh https://raw.githubusercontent.com/NiL070/oddloop/main/insta
    - IPv6                     : [OFF]
    - Auto-Remove-Expired      : [ON]
    - Auto-Backup-Account      : [ON]
+   - Add Change Dropbear Menu : [NEW]
+   - Add NoobzVpn Menu        : [NEW]
    - Fully automatic script
    - VPS settings
    - Admin Control
