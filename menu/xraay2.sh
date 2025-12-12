@@ -1256,10 +1256,10 @@ export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f
 
 export vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}_${exp}"
 export vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}_${exp}"
-export vlesslink3="vless://${uuid}@${sts}${domain}:$tls2?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
-export vlesslink4="vless://${uuid}@${sts}${domain}:$none2?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
-export vlesslink5="vless://${uuid}@${sts}${domain}:$tls3?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
-export vlesslink6="vless://${uuid}@${sts}${domain}:$none3?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
+export vlesslink3="vless://${uuid}@${sts}${domain}:$upgradetls?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
+export vlesslink4="vless://${uuid}@${sts}${domain}:$upgradenone?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
+export vlesslink5="vless://${uuid}@${sts}${domain}:$xhttptls?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
+export vlesslink6="vless://${uuid}@${sts}${domain}:$xhttpnone?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
 
 clear
 echo -e ""
