@@ -436,10 +436,10 @@ export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 sed -i '/#xray-trojan-tls$/a\#trws '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojan.json
 sed -i '/#xray-trojan-nontls$/a\#trws '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojannone.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 systemctl restart xray@trojan
-systemctl restart xray@trojannone
+systemctl restart xray@none
 
 export trojanlink="trojan://${user}@${sts}${domain}:80?host=$sni&security=none&type=ws&path=${patchnone}#${user}";
 export trojanlink1="trojan://${user}@${sts}${domain}:443?path=$patchtls&security=tls&host=bug.com&type=ws&sni=$sni#${user}"
@@ -540,10 +540,10 @@ export harini=`date -d "0 days" +"%Y-%m-%d"`
 sed -i '/#xray-trojan-tls$/a\#trws '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojan.json
 sed -i '/#xray-trojan-nontls$/a\#trws '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojannone.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 systemctl restart xray@trojan
-systemctl restart xray@trojannone
+systemctl restart xray@none
 
 export trojanlink="trojan://${user}@${sts}${domain}:80?path=$patchnone&security=none&host=$sni&type=ws#${user}"
 export trojanlink1="trojan://${user}@${sts}${domain}:443?path=$patchtls&security=tls&host=bug.com&type=ws&sni=$sni#${user}"
@@ -607,9 +607,9 @@ export user=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -
 export exp=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 
 sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/trojan.json
-sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/trojannone.json
+sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
 
-systemctl restart xray@trojannone
+systemctl restart xray@none
 systemctl restart xray@trojan
 service cron restart
 
@@ -661,7 +661,7 @@ export exp3=$(($exp2 + $masaaktif))
 export exp4=`date -d "$exp3 days" +"%Y-%m-%d"`
 
 sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/trojan.json
-sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/trojannone.json
+sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
 
 service cron restart
 
