@@ -414,108 +414,6 @@ cat> /usr/local/etc/xray/vless.json << END
   }
 }
 END
-# // JSON VLESS WS 
-cat> /usr/local/etc/xray/vlessnone.json << END
-{
-  "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-       },
-    "inbounds": [
-            {
-        "port": "1301",
-        "listen": "127.0.0.1",
-        "protocol": "vless",
-        "settings": {
-          "decryption":"none",
-            "clients": [
-               {
-                 "id": "${uuid3}"
-#xray-vless-nontls
-             }
-          ]
-       },
-       "streamSettings":{
-         "network": "ws",
-            "wsSettings": {
-              "acceptProxyProtocol": true,
-                "path": "/"
-
-                }
-            }
-        }
-    ],
-    "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
-    }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
-      }
-    ]
-  },
-  "stats": {},
-  "api": {
-    "services": [
-      "StatsService"
-    ],
-    "tag": "api"
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserDownlink": true,
-        "statsUserUplink": true
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true
-    }
-  }
-}
-END
 
 # // VMESS JSON
 cat> /usr/local/etc/xray/vmess.json << END
@@ -546,107 +444,6 @@ cat> /usr/local/etc/xray/vmess.json << END
                 "wsSettings": {
                     "acceptProxyProtocol": true,
                     "path": "/vmess"
-                }
-            }
-        }
-    ],
-    "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
-    }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
-      }
-    ]
-  },
-  "stats": {},
-  "api": {
-    "services": [
-      "StatsService"
-    ],
-    "tag": "api"
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserDownlink": true,
-        "statsUserUplink": true
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true
-    }
-  }
-}
-END
-
-cat> /usr/local/etc/xray/vmessnone.json << END
-{
-  "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-       },
-    "inbounds": [
-            {
-        "port": "1303",
-         "listen": "127.0.0.1",
-         "protocol": "vmess",
-         "settings": {
-            "clients": [
-               {
-                 "id": "${uuid5}",
-                 "alterId": 0
-#xray-vmess-nontls
-             }
-          ]
-       },
-       "streamSettings":{
-         "network": "ws",
-            "wsSettings": {
-              "acceptProxyProtocol": true,
-                "path": "/vmess"
                 }
             }
         }
@@ -825,38 +622,172 @@ cat> /usr/local/etc/xray/trojan.json << END
 }
 END
 
-cat> /usr/local/etc/xray/trojannone.json << END
+# // JSON WS NONE
+cat > /usr/local/etc/xray/none.json << END
 {
-  "log": {
+  "log" : {
     "access": "/var/log/xray/access.log",
     "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-       },
-    "inbounds": [
-            {
-        "port": "1304",
-        "listen": "127.0.0.1",
-        "protocol": "trojan",
-        "settings": {
-          "decryption":"none",
-           "clients": [
-              {
-                 "password": "${uuid7}"
-#xray-trojan-nontls
-              }
-          ],
-         "udp": true
-       },
-       "streamSettings":{
-           "network": "ws",
-           "wsSettings": {
-             "acceptProxyProtocol": true,
-               "path": "/trojanwsntls"
-             }
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 80,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid8}"
           }
-       }
-    ],
-    "outbounds": [
+        ],
+        "decryption": "none",
+        "fallbacks": [
+          {
+            "dest": 1301, # // VLESS NONE
+            "xver": 1
+          },
+          {
+            "path": "/httpupgrade", # // HTTPUPGRADE NONE
+            "dest": 1302,
+            "xver": 1			
+          },
+          {
+            "path": "/vmess", # // VMESS NONE
+            "dest": 1303,
+            "xver": 1
+          },
+          {
+             "path": "/trojanwsntls", # // TROJAN NONE
+            "dest": 1304,
+            "xver": 1
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none",
+        "tlsSettings": {
+          "alpn": ["http/1.1"]
+        }
+      }
+    },
+    {
+      "port": "1301",
+      "listen": "127.0.0.1",
+      "protocol": "vless",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "id": "${uuid3}"
+#xray-vless-nontls
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/"
+        }
+      }
+    },
+    {
+      "port": "1303",
+      "listen": "127.0.0.1",
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid5}",
+            "alterId": 0
+#xray-vmess-nontls
+          }
+        ]
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/vmess"
+        }
+      }
+    },
+    {
+      "port": "1304",
+      "listen": "127.0.0.1",
+      "protocol": "trojan",
+      "settings": {
+        "decryption":"none",
+        "clients": [
+          {
+            "password": "${uuid7}"
+#xray-trojan-nontls
+          }
+        ],
+        "udp": true
+      },
+      "streamSettings":{
+        "network": "ws",
+        "wsSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/trojanwsntls"
+        }
+      }
+    },
+    {
+      "tag": "xHTTP",
+      "port": 1302,
+      "listen": "127.0.0.1",
+      "protocol": "vless",
+      "settings": {
+        "decryption": "none",
+        "clients": [
+          {
+            "id": "${uuid3}",
+            "level": 0
+#httpupgrade-nontls
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "httpupgrade",
+        "security": "none",
+        "httpupgradeSettings": {
+          "acceptProxyProtocol": true,
+          "path": "/httpupgrade"
+        }
+      }
+    },
+    {
+      "tag": "xHTTP",
+      "port": 8080,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "${uuid3}"
+#xray-vless-xhttp-nontls         
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "none",
+        "xhttpSettings": {
+          "path": "/xhttp",
+          "headers": {},
+          "scMaxBufferedPosts": 20,
+          "scMaxEachPostBytes": 800000,
+          "noSSEHeader": false,
+          "xPaddingBytes": "100-1000",
+          "mode": "auto"
+        }
+      }
+    }
+  ],
+  "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
@@ -927,126 +858,6 @@ cat> /usr/local/etc/xray/trojannone.json << END
 }
 END
 
-# // JSON WS NONE
-cat> /usr/local/etc/xray/none.json << END
-{
-  "log" : {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "warning"
-  },
-  "inbounds": [
-      {
-      "port": 80,
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "${uuid8}"
-          }
-        ],
-        "decryption": "none",
-        "fallbacks": [
-          {
-            "dest": 1301, # // VLESS NONE
-            "xver": 1
-          },
-          {
-            "path": "/httpupgrade", # // HTTPUPGRADE NONE
-            "dest": 1302,
-            "xver": 1			
-          },
-          {
-            "path": "/vmess", # // VMESS NONE
-            "dest": 1303,
-            "xver": 1
-          },
-          {
-             "path": "/trojanwsntls", # // TROJAN NONE
-            "dest": 1304,
-            "xver": 1
-          }
-        ]
-      },
-      "streamSettings": {
-       "network": "tcp",
-        "security": "none",
-         "tlsSettings": {
-          "alpn": ["http/1.1"]
-             }
-          }
-       }
-    ],
-    "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
-    }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
-      }
-    ]
-  },
-  "stats": {},
-  "api": {
-    "services": [
-      "StatsService"
-    ],
-    "tag": "api"
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserDownlink": true,
-        "statsUserUplink": true
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true
-    }
-  }
-}
-END
 
 # JSON HTTPUPGRADE TLS
 cat> /usr/local/etc/xray/upgradetls.json << END
@@ -1082,111 +893,6 @@ cat> /usr/local/etc/xray/upgradetls.json << END
         }
     ],
     "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
-    }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
-      }
-    ]
-  },
-  "stats": {},
-  "api": {
-    "services": [
-      "StatsService"
-    ],
-    "tag": "api"
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserDownlink": true,
-        "statsUserUplink": true
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true
-    }
-  }
-}
-END
-
-# JSON HTTPUPGRADE NONE TLS
-cat> /usr/local/etc/xray/upgradenone.json << END
-{
-  "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-  },
-  "inbounds": [
-    {
-      "tag": "xHTTP",
-      "port": 1302,
-      "listen": "127.0.0.1",
-      "protocol": "vless",
-      "settings": {
-        "decryption": "none",
-        "clients": [
-          {
-            "id": "${uuid3}",
-            "level": 0
-#httpupgrade-nontls
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "httpupgrade",
-        "security": "none",
-        "httpupgradeSettings": {
-          "acceptProxyProtocol": true,
-          "path": "/httpupgrade"
-        }
-      }
-    }
-  ],
-  "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
@@ -1305,114 +1011,6 @@ cat> /usr/local/etc/xray/xhttptls.json << END
     }
   ],
   "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {}
-    },
-    {
-      "protocol": "blackhole",
-      "settings": {},
-      "tag": "blocked"
-    }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "0.0.0.0/8",
-          "10.0.0.0/8",
-          "100.64.0.0/10",
-          "169.254.0.0/16",
-          "172.16.0.0/12",
-          "192.0.0.0/24",
-          "192.0.2.0/24",
-          "192.168.0.0/16",
-          "198.18.0.0/15",
-          "198.51.100.0/24",
-          "203.0.113.0/24",
-          "::1/128",
-          "fc00::/7",
-          "fe80::/10"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      },
-      {
-        "type": "field",
-        "outboundTag": "blocked",
-        "protocol": [
-          "bittorrent"
-        ]
-      }
-    ]
-  },
-  "stats": {},
-  "api": {
-    "services": [
-      "StatsService"
-    ],
-    "tag": "api"
-  },
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserDownlink": true,
-        "statsUserUplink": true
-      }
-    },
-    "system": {
-      "statsInboundUplink": true,
-      "statsInboundDownlink": true
-    }
-  }
-}
-END
-
-# JSON XHTTP NONE TLS
-cat> /usr/local/etc/xray/xhttp.json << END
-{
-  "log": {
-    "access": "/var/log/xray/access.log",
-    "error": "/var/log/xray/error.log",
-    "loglevel": "info"
-  },
-  "inbounds": [
-    {
-      "tag": "xHTTP",
-      "port": 8080,
-      "protocol": "vless",
-      "settings": {
-        "clients": [
-          {
-            "id": "${uuid3}"
-#xray-vless-xhttp-nontls         
-          }
-        ],
-        "decryption": "none"
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "security": "none",
-        "xhttpSettings": {
-          "path": "/xhttp",
-          "headers": {},
-          "scMaxBufferedPosts": 20,
-          "scMaxEachPostBytes": 800000,
-          "noSSEHeader": false,
-          "xPaddingBytes": "100-1000",
-          "mode": "auto"
-        }
-      }
-    }
-  ],
-    "outbounds": [
     {
       "protocol": "freedom",
       "settings": {}
