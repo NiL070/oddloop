@@ -471,7 +471,6 @@ cat > /usr/local/etc/xray/none.json << END
       }
     },
     {
-      "tag": "xHTTP",
       "port": 1302,
       "listen": "127.0.0.1",
       "protocol": "vless",
@@ -495,7 +494,6 @@ cat > /usr/local/etc/xray/none.json << END
       }
     },
     {
-      "tag": "xHTTP",
       "port": 8080,
       "protocol": "vless",
       "settings": {
