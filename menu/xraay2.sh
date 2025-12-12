@@ -33,10 +33,10 @@ export back_text=$(cat /etc/back)
 export number=$(cat /etc/number)
 
 # // TOTAL ACC CREATE VMESS WS
-export total1=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
+export total1=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
 
 # // TOTAL ACC CREATE  VLESS WS
-export total2=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
+export total2=$(grep -c -E "^#vls " "/usr/local/etc/xray/config.json")
 
 # // TOTAL ACC CREATE  VLESS TCP XTLS
 export total3=$(grep -c -E "^#vxtls " "/usr/local/etc/xray/config.json")
@@ -56,7 +56,7 @@ echo -e   "  \e[$back_text           \e[30m[\e[$box CREATE USER XRAY VMESS WS TL
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${CLIENT_EXISTS} == '0' ]]; do
 		read -rp "   Username: " -e user
-		CLIENT_EXISTS=$(grep -w $user /usr/local/etc/xray/vmess.json | wc -l)
+		CLIENT_EXISTS=$(grep -w $user /usr/local/etc/xray/config.json | wc -l)
 
 		if [[ ${CLIENT_EXISTS} == '1' ]]; then
 			echo ""
@@ -113,9 +113,9 @@ export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#xray-vmess-tls$/a\#vms '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/vmess.json
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vmess-nontls$/a\#vms '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/vmessnone.json
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
@@ -244,8 +244,8 @@ export vmess_base642=$( base64 -w 0 <<< $vmess_json2)
 export vmesslink1="vmess://$(base64 -w 0 /usr/local/etc/xray/$user-tls.json)"
 export vmesslink2="vmess://$(base64 -w 0 /usr/local/etc/xray/$user-none.json)"
 
-systemctl restart xray@vmess
-systemctl restart xray@vmessnone
+systemctl restart xray@config
+systemctl restart xray@none
 service cron restart
 
 clear
@@ -314,9 +314,9 @@ fi
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#xray-vmess-tls$/a\#vms '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/vmess.json
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vmess-nontls$/a\#vms '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/vmessnone.json
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
@@ -445,8 +445,8 @@ export vmess_base642=$( base64 -w 0 <<< $vmess_json2)
 export vmesslink1="vmess://$(base64 -w 0 /usr/local/etc/xray/$user-tls.json)"
 export vmesslink2="vmess://$(base64 -w 0 /usr/local/etc/xray/$user-none.json)"
 
-systemctl restart xray@vmess
-systemctl restart xray@vmessnone
+systemctl restart xray@config
+systemctl restart xray@none
 service cron restart
 
 clear
@@ -485,7 +485,7 @@ xraay
 # FUCTION DELETE USER
 function menu3 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		echo ""
 		echo "You have no existing clients!"
@@ -498,7 +498,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 	echo " Press CTRL+C to return"
 	echo " ==============================="
 	echo "     No  Expired   User"
-	grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -506,21 +506,21 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 			read -rp "Select one client [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
 		fi
 	done	
-export harini=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 
-sed -i "/^#vms $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/vmess.json
-sed -i "/^#vms $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/vmessnone.json
+sed -i "/^#vms $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
+sed -i "/^#vms $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
 
 rm -f /usr/local/etc/xray/$user-tls.json
 rm -f /usr/local/etc/xray/$user-none.json
 rm -f /usr/local/etc/xray/$user-clash-for-android.yaml
 rm -f /home/vps/public_html/$user-clash-for-android.yaml
 
-systemctl restart xray@vmess
-systemctl restart xray@vmessnone
+systemctl restart xray@config
+systemctl restart xray@none
 
 clear
 echo " XRAY VMESS WS Account Deleted Successfully"
@@ -535,7 +535,7 @@ xraay
 # FUCTION RENEW USER
 function menu4 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -548,7 +548,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -557,10 +557,10 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 		fi
 	done
 read -p "Expired (days): " masaaktif
-export harini=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 export now=$(date +%Y-%m-%d)
 export d1=$(date -d "$exp" +%s)
 export d2=$(date -d "$now" +%s)
@@ -568,11 +568,11 @@ export exp2=$(( (d1 - d2) / 86400 ))
 export exp3=$(($exp2 + $masaaktif))
 export exp4=`date -d "$exp3 days" +"%Y-%m-%d"`
 
-sed -i "s/#vms $user $exp $harini $uuid/#vms $user $exp4 $harini $uuid/g" /usr/local/etc/xray/vmess.json
-sed -i "s/#vms $user $exp $harini $uuid/#vms $user $exp4 $harini $uuid/g" /usr/local/etc/xray/vmessnone.json
+sed -i "s/#vms $user $exp $harini $uuid/#vms $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
+sed -i "s/#vms $user $exp $harini $uuid/#vms $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
 
-systemctl restart xray@vmess
-systemctl restart xray@vmessnone
+systemctl restart xray@config
+systemctl restart xray@none
 service cron restart
 
 clear
@@ -592,7 +592,7 @@ function menu5 () {
 clear
 tls="$(cat ~/log-install.txt | grep -w "Vmess Ws Tls" | cut -d: -f2|sed 's/ //g')"
 none="$(cat ~/log-install.txt | grep -w "Vmess Ws None Tls" | cut -d: -f2|sed 's/ //g')"
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -606,7 +606,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -616,10 +616,10 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vms " "/usr/local/etc/xray/vmess.json")
 	done
 export patchtls=/vmess
 export patchnontls=/vmess
-export user=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export harini=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/vmess.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vms " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
 cat>/usr/local/etc/xray/$user-tls.json<<EOF
       {
       "v": "2",
@@ -782,7 +782,7 @@ xraay
 function menu6 () {
 clear
 echo -n > /tmp/other.txt
-data=( `cat /usr/local/etc/xray/vmess.json | grep '^#vms' | cut -d ' ' -f 2`); 
+data=( `cat /usr/local/etc/xray/config.json | grep '^#vms' | cut -d ' ' -f 2`); 
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
 echo -e "\\E[0;44;37m      ⇱ XRAY Vmess WS User Login  ⇲       \E[0m"
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
@@ -827,16 +827,16 @@ function menu7 () {
 clear
 tls="$(cat ~/log-install.txt | grep -w "Vless Ws Tls" | cut -d: -f2|sed 's/ //g')"
 none="$(cat ~/log-install.txt | grep -w "Vless Ws None Tls" | cut -d: -f2|sed 's/ //g')"
-tls2="443"
-none2="80"
-tls3="8443"
-none3="8080"
+upgradetls="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade Tls" | cut -d: -f2|sed 's/ //g')"
+upgradenone="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade None Tls" | cut -d: -f2|sed 's/ //g')"
+xhttptls="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp Tls" | cut -d: -f2|sed 's/ //g')"
+xhttpnone="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp None Tls" | cut -d: -f2|sed 's/ //g')"
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 echo -e   "  \e[$back_text           \e[30m[\e[$box CREATE USER XRAY VLESS WS TLS\e[30m ]\e[1m           \e[m"
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${CLIENT_EXISTS} == '0' ]]; do
 		read -rp "   Username: " -e user
-		CLIENT_EXISTS=$(grep -w $user /usr/local/etc/xray/vless.json | wc -l)
+		CLIENT_EXISTS=$(grep -w $user /usr/local/etc/xray/config.json | wc -l)
 
 		if [[ ${CLIENT_EXISTS} == '1' ]]; then
 			echo ""
@@ -895,32 +895,28 @@ export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#xray-vless-tls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vless.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-nontls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vlessnone.json
-sed -i '/#httpupgrade-tls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/upgradetls.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
+sed -i '/#httpupgrade-tls$/a\#vls-http '"$user $exp $harini $uuid"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#httpupgrade-nontls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/upgradenone.json
-sed -i '/#xray-vless-xhttp-tls[[:space:]]*$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/xhttptls.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
+sed -i '/#xray-vless-xhttp-tls[[:space:]]*$/a\#vls-xhttp '"$user $exp $harini $uuid"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-xhttp-nontls/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/xhttp.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 export vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}_${exp}"
 export vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}_${exp}"
-export vlesslink3="vless://${uuid}@${sts}${domain}:$tls2?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
-export vlesslink4="vless://${uuid}@${sts}${domain}:$none2?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
-export vlesslink5="vless://${uuid}@${sts}${domain}:$tls3?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
-export vlesslink6="vless://${uuid}@${sts}${domain}:$none3?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
+export vlesslink3="vless://${uuid}@${sts}${domain}:$upgradetls?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
+export vlesslink4="vless://${uuid}@${sts}${domain}:$upgradenone?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
+export vlesslink5="vless://${uuid}@${sts}${domain}:$xhttptls?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
+export vlesslink6="vless://${uuid}@${sts}${domain}:$xhttpnone?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
 
 
-systemctl restart xray@vless
-systemctl restart xray@vlessnone
-systemctl restart xray@upgradetls
-systemctl restart xray@upgradenone
-systemctl restart xray@xhttptls
-systemctl restart xray@xhttp
+systemctl restart xray@config
+systemctl restart xray@none
 
 cat > /home/vps/public_html/vless-$user.txt <<-END
 
@@ -1012,10 +1008,10 @@ function menu8 () {
 clear
 tls="$(cat ~/log-install.txt | grep -w "Vless Ws Tls" | cut -d: -f2|sed 's/ //g')"
 none="$(cat ~/log-install.txt | grep -w "Vless Ws None Tls" | cut -d: -f2|sed 's/ //g')"
-tls2="443"
-none2="80"
-tls3="8443"
-none3="8080"
+upgradetls="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade Tls" | cut -d: -f2|sed 's/ //g')"
+upgradenone="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade None Tls" | cut -d: -f2|sed 's/ //g')"
+xhttptls="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp Tls" | cut -d: -f2|sed 's/ //g')"
+xhttpnone="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp None Tls" | cut -d: -f2|sed 's/ //g')"
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 echo -e   "  \e[$back_text           \e[30m[\e[$box TRIAL USER XRAY VLESS WS TLS\e[30m ]\e[1m            \e[m"
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
@@ -1047,31 +1043,27 @@ fi
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#xray-vless-tls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vless.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-nontls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/vlessnone.json
-sed -i '/#httpupgrade-tls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/upgradetls.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
+sed -i '/#httpupgrade-tls$/a\#vls-http '"$user $exp $harini $uuid"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#httpupgrade-nontls$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/upgradenone.json
-sed -i '/#xray-vless-xhttp-tls[[:space:]]*$/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/xhttptls.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
+sed -i '/#xray-vless-xhttp-tls[[:space:]]*$/a\#vls-xhttp '"$user $exp $harini $uuid"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-vless-xhttp-nontls/a\#vls '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/xhttp.json
+},{"id": "'""$uuid""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
 export vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}_${exp}"
 export vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}_${exp}"
-export vlesslink3="vless://${uuid}@${sts}${domain}:$tls2?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
-export vlesslink4="vless://${uuid}@${sts}${domain}:$none2?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
-export vlesslink5="vless://${uuid}@${sts}${domain}:$tls3?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
-export vlesslink6="vless://${uuid}@${sts}${domain}:$none3?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
+export vlesslink3="vless://${uuid}@${sts}${domain}:$upgradetls?path=$patchupgrade&security=tls&encryption=none&type=httpupgrade&sni=$sni#${user}_${exp}"
+export vlesslink4="vless://${uuid}@${sts}${domain}:$upgradenone?path=$patchupgrade&encryption=none&host=$sni&type=httpupgrade#${user}_${exp}"
+export vlesslink5="vless://${uuid}@${sts}${domain}:$xhttptls?path=$patchxhttp&security=tls&encryption=none&type=xhttp&sni=$sni&alpn=http/1.1#${user}_${exp}"
+export vlesslink6="vless://${uuid}@${sts}${domain}:$xhttpnone?path=$patchxhttp&encryption=none&host=$sni&type=xhttp#${user}_${exp}"
 
-systemctl restart xray@vless
-systemctl restart xray@vlessnone
-systemctl restart xray@upgradetls
-systemctl restart xray@upgradenone
-systemctl restart xray@xhttptls
-systemctl restart xray@xhttp
+systemctl restart xray@config
+systemctl restart xray@none
 
 clear
 echo -e ""
@@ -1116,7 +1108,7 @@ xraay
 # DELETE USER VLESS WS
 function menu9 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		echo ""
 		echo "You have no existing clients!"
@@ -1129,7 +1121,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
 	echo " Press CTRL+C to return"
 	echo " ==============================="
 	echo "     No  Expired   User"
-	grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -1137,24 +1129,20 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
 			read -rp "Select one client [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
 		fi
 	done
-export harini=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/vless.json
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/vlessnone.json
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/upgradetls.json
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/upgradenone.json
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/xhttptls.json
-sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/xhttp.json
+sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
+sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
+sed -i "/^#vls-http $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
+sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
+sed -i "/^#vls-xhttp $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
+sed -i "/^#vls $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
 
-systemctl restart xray@vless
-systemctl restart xray@vlessnone
-systemctl restart xray@upgradetls
-systemctl restart xray@upgradenone
-systemctl restart xray@xhttptls
-systemctl restart xray@xhttp
+systemctl restart xray@config
+systemctl restart xray@none
 
 clear
 echo " Xray Vless Ws Account Deleted Successfully"
@@ -1170,7 +1158,7 @@ xraay
 #RENEW VLESS WS
 function menu10 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -1183,7 +1171,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -1192,10 +1180,10 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
 		fi
 	done
 read -p "Expired (days): " masaaktif
-export harini=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 export now=$(date +%Y-%m-%d)
 export d1=$(date -d "$exp" +%s)
 export d2=$(date -d "$now" +%s)
@@ -1203,19 +1191,15 @@ export exp2=$(( (d1 - d2) / 86400 ))
 export exp3=$(($exp2 + $masaaktif))
 export exp4=`date -d "$exp3 days" +"%Y-%m-%d"`
 
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/vless.json
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/vlessnone.json
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/upgradetls.json
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/upgradenone.json
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/xhttptls.json
-sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/xhttp.json
+sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
+sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
+sed -i "s/#vls-http $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
+sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
+sed -i "s/#vls-xhttp $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
+sed -i "s/#vls $user $exp $harini $uuid/#vls $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
 
-systemctl restart xray@vless
-systemctl restart xray@vlessnone
-systemctl restart xray@upgradetls
-systemctl restart xray@upgradenone
-systemctl restart xray@xhttptls
-systemctl restart xray@xhttp
+systemctl restart xray@config
+systemctl restart xray@none
 service cron restart
 
 clear
@@ -1235,11 +1219,11 @@ function menu11 () {
 clear
 tls="$(cat ~/log-install.txt | grep -w "Vless Ws Tls" | cut -d: -f2|sed 's/ //g')"
 none="$(cat ~/log-install.txt | grep -w "Vless Ws None Tls" | cut -d: -f2|sed 's/ //g')"
-tls2="443"
-none2="80"
-tls3="8443"
-none3="8080"
-NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
+upgradetls="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade Tls" | cut -d: -f2|sed 's/ //g')"
+upgradenone="$(cat ~/log-install.txt | grep -w "Xray HttpUpgrade None Tls" | cut -d: -f2|sed 's/ //g')"
+xhttptls="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp Tls" | cut -d: -f2|sed 's/ //g')"
+xhttpnone="$(cat ~/log-install.txt | grep -w "Xray Vless Xhttp None Tls" | cut -d: -f2|sed 's/ //g')"
+NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -1253,7 +1237,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#vls " "/usr/local/etc/xray/vless.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -1265,10 +1249,10 @@ export patchtls=/vless
 export patchnontls=/
 export patchupgrade=/httpupgrade
 export patchxhttp=/xhttp
-export user=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export harini=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/vless.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#vls " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
 
 export vlesslink1="vless://${uuid}@${sts}${domain}:$tls?path=$patchtls&security=tls&encryption=none&type=ws&sni=$sni#${user}_${exp}"
 export vlesslink2="vless://${uuid}@${sts}${domain}:$none?path=$patchnontls&encryption=none&host=$sni&type=ws#${user}_${exp}"
@@ -1322,7 +1306,7 @@ xraay
 function menu12 () {
 clear
 echo -n > /tmp/other.txt
-data=( `cat /usr/local/etc/xray/vless.json | grep '^#vls' | cut -d ' ' -f 2`);
+data=( `cat /usr/local/etc/xray/config.json | grep '^#vls' | cut -d ' ' -f 2`);
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
 echo -e "\\E[0;44;37m      ⇱ XRAY Vless WS User Login ⇲        \E[0m"
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
