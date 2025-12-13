@@ -197,7 +197,7 @@ echo "   - OpenVPN                   : TCP 1194, UDP 2200"  | tee -a log-install
 echo "   - OpenVPN SSL               : 110"  | tee -a log-install.txt
 echo "   - Stunnel4                  : 222, 777"  | tee -a log-install.txt
 echo "   - Dropbear                  : 143, 109"  | tee -a log-install.txt
-echo "   - Udp Custom              : 1-65535"  | tee -a log-install.txt
+echo "   - Udp Custom                : 1-65535"  | tee -a log-install.txt
 echo "   - OHP Dropbear              : 8585"  | tee -a log-install.txt
 echo "   - OHP SSH                   : 8686"  | tee -a log-install.txt
 echo "   - OHP OpenVPN               : 8787"  | tee -a log-install.txt
