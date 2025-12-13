@@ -98,96 +98,129 @@ ascii=$(cat /usr/bin/test)
 clear
 
 # ------------------------------
-# Detect interface vnstat
+# Detect interface yang betul-betul vnstat monitor
 # ------------------------------
-iface="$(ifconfig 2>/dev/null | awk 'NR==1 {sub(/:$/, "", $1); print $1}')"
-if [ -z "$iface" ]; then
-    iface=$(ip -o link show | awk -F': ' '$2 != "lo" {print $2; exit}')
+# 1) cuba ambil interface default route (paling tepat untuk server)
+iface="$(ip route show default 2>/dev/null | awk '{print $5; exit}')"
+
+# 2) kalau vnstat ada list interface dia sendiri, guna itu sebagai fallback
+if command -v vnstat >/dev/null 2>&1; then
+  iflist="$(vnstat --iflist 1 2>/dev/null || vnstat --iflist 2>/dev/null || true)"
+  vn_iface="$(printf '%s\n' "$iflist" \
+    | awk 'BEGIN{IGNORECASE=1}
+           /^[[:space:]]*$/ {next}
+           /available/ {next}
+           /^[[:space:]]*lo[[:space:]]*$/ {next}
+           /^[[:space:]]*[[:alnum:]][[:alnum:]._:-]*[[:space:]]*$/ {gsub(/^[ \t]+|[ \t]+$/, "", $0); print $0; exit}')"
+
+  # kalau default-route iface tak wujud dalam vnstat list, guna vn_iface
+  if [ -z "${iface:-}" ] || ! printf '%s\n' "$iflist" | grep -qw "${iface:-}"; then
+    [ -n "${vn_iface:-}" ] && iface="$vn_iface"
+  fi
+fi
+
+# 3) last fallback: ambil first non-lo dari ip link
+if [ -z "${iface:-}" ]; then
+  iface="$(ip -o link show | awk -F': ' '$2!="lo"{print $2; exit}')"
 fi
 
 # ------------------------------
-# Prepare date variables
+# Helper: ambil value pertama yang tak kosong
 # ------------------------------
-today=$(date +%Y-%m-%d)
-yesterday=$(date -d 'yesterday' +%Y-%m-%d)
-month=$(date +%Y-%m)
-month_deb=$(date +"%b '%y")  # For Debian old format
-totalmon="$(vnstat | grep "total:" | awk '{print $8, $9}')"
-
-# ------------------------------
-# 1️⃣ Modern v2 global
-# ------------------------------
-dmon="$(vnstat -m | grep "$month" | awk '{print $2, $3}')"
-umon="$(vnstat -m | grep "$month" | awk '{print $5, $6}')"
-tmon="$(vnstat -m | grep "$month" | awk '{print $8, $9}')"
-
-dtoday="$(vnstat -d | grep "$today" | awk '{print $2, $3}')"
-utoday="$(vnstat -d | grep "$today" | awk '{print $5, $6}')"
-ttoday="$(vnstat -d | grep "$today" | awk '{print $8, $9}')"
-
-dyest="$(vnstat -d | grep "$yesterday" | awk '{print $2, $3}')"
-uyest="$(vnstat -d | grep "$yesterday" | awk '{print $5, $6}')"
-tyest="$(vnstat -d | grep "$yesterday" | awk '{print $8, $9}')"
+first_nonempty() {
+  for v in "$@"; do
+    if [ -n "$v" ]; then
+      printf '%s' "$v"
+      return 0
+    fi
+  done
+  printf '%s' "N/A"
+}
 
 # ------------------------------
-# 2️⃣ Modern v2 interface (-i $iface)
+# Paksa vnstat update (kalau ada permission)
 # ------------------------------
-dmon_if2="$(vnstat -i $iface -m | grep "$month" | awk '{print $2, $3}')"
-umon_if2="$(vnstat -i $iface -m | grep "$month" | awk '{print $5, $6}')"
-tmon_if2="$(vnstat -i $iface -m | grep "$month" | awk '{print $8, $9}')"
-
-dtoday_if2="$(vnstat -i $iface -d | grep "$today" | awk '{print $2, $3}')"
-utoday_if2="$(vnstat -i $iface -d | grep "$today" | awk '{print $5, $6}')"
-ttoday_if2="$(vnstat -i $iface -d | grep "$today" | awk '{print $8, $9}')"
-
-dyest_if2="$(vnstat -i $iface -d | grep "$yesterday" | awk '{print $2, $3}')"
-uyest_if2="$(vnstat -i $iface -d | grep "$yesterday" | awk '{print $5, $6}')"
-tyest_if2="$(vnstat -i $iface -d | grep "$yesterday" | awk '{print $8, $9}')"
+# Nota: kalau bukan root, command ni mungkin gagal — tak apa.
+vnstat -u -i "$iface" >/dev/null 2>&1 || true
 
 # ------------------------------
-# 3️⃣ v1 global (fallback)
+# Parser line vnstat table: "DATE  RX | TX | TOTAL"
+# Ambil nilai RX/TX/TOTAL sebagai "num unit"
 # ------------------------------
-dmon_v1="$(vnstat -m | grep "$month_deb" | awk '{print $3" "substr($4,1,1)}')"
-umon_v1="$(vnstat -m | grep "$month_deb" | awk '{print $6" "substr($7,1,1)}')"
-tmon_v1="$(vnstat -m | grep "$month_deb" | awk '{print $9" "substr($10,1,1)}')"
+parse_vn_line() {
+  awk -F'\\|' '
+    function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+    {
+      f1=trim($1); f2=trim($2); f3=trim($3);
 
-dtoday_v1="$(vnstat -d | grep "today" | awk '{print $2" "substr($3,1,1)}')"
-utoday_v1="$(vnstat -d | grep "today" | awk '{print $5" "substr($6,1,1)}')"
-ttoday_v1="$(vnstat -d | grep "today" | awk '{print $8" "substr($9,1,1)}')"
+      # RX berada di hujung field pertama (sebab awal field ada tarikh/label)
+      n=split(f1,a,/[ \t]+/); rx=a[n-1]" "a[n];
 
-dyest_v1="$(vnstat -d | grep "yesterday" | awk '{print $2" "substr($3,1,1)}')"
-uyest_v1="$(vnstat -d | grep "yesterday" | awk '{print $5" "substr($6,1,1)}')"
-tyest_v1="$(vnstat -d | grep "yesterday" | awk '{print $8" "substr($9,1,1)}')"
+      # TX dan TOTAL biasanya terus bermula dengan "num unit"
+      m=split(f2,b,/[ \t]+/); tx=b[1]" "b[2];
+      k=split(f3,c,/[ \t]+/); tt=c[1]" "c[2];
 
-# ------------------------------
-# 4️⃣ v1 interface (-i $iface)
-# ------------------------------
-dmon_if1="$(vnstat -i $iface -m | grep "$month_deb" | awk '{print $3" "substr($4,1,1)}')"
-umon_if1="$(vnstat -i $iface -m | grep "$month_deb" | awk '{print $6" "substr($7,1,1)}')"
-tmon_if1="$(vnstat -i $iface -m | grep "$month_deb" | awk '{print $9" "substr($10,1,1)}')"
-
-dtoday_if1="$(vnstat -i $iface | grep "today" | awk '{print $2" "substr($3,1,1)}')"
-utoday_if1="$(vnstat -i $iface | grep "today" | awk '{print $5" "substr($6,1,1)}')"
-ttoday_if1="$(vnstat -i $iface | grep "today" | awk '{print $8" "substr($9,1,1)}')"
-
-dyest_if1="$(vnstat -i $iface | grep "yesterday" | awk '{print $2" "substr($3,1,1)}')"
-uyest_if1="$(vnstat -i $iface | grep "yesterday" | awk '{print $5" "substr($6,1,1)}')"
-tyest_if1="$(vnstat -i $iface | grep "yesterday" | awk '{print $8" "substr($9,1,1)}')"
+      print rx "|" tx "|" tt;
+    }' <<<"$1"
+}
 
 # ------------------------------
-# Fallback logic: pilih yang ada output
+# Ambil TODAY & YESTERDAY tanpa header "day rx|tx|total"
+# Kalau hanya ada 1 baris (today je), yesterday biar kosong (nanti fallback jadi N/A)
 # ------------------------------
-dmon="${dmon:-$dmon_if2:-$dmon_v1:-$dmon_if1}"
-umon="${umon:-$umon_if2:-$umon_v1:-$umon_if1}"
-tmon="${tmon:-$tmon_if2:-$tmon_v1:-$tmon_if1}"
+mapfile -t day_lines < <(
+  vnstat --style 0 -i "$iface" -d 2 2>/dev/null \
+  | awk -F'\\|' 'NF>=3 && $0 !~ /estimated/ && $0 ~ /[0-9]/ {print $0}'
+)
 
-dtoday="${dtoday:-$dtoday_if2:-$dtoday_v1:-$dtoday_if1}"
-utoday="${utoday:-$utoday_if2:-$utoday_v1:-$utoday_if1}"
-ttoday="${ttoday:-$ttoday_if2:-$ttoday_v1:-$ttoday_if1}"
+if [ "${#day_lines[@]}" -ge 2 ]; then
+  y_line="${day_lines[-2]}"
+  t_line="${day_lines[-1]}"
 
-dyest="${dyest:-$dyest_if2:-$dyest_v1:-$dyest_if1}"
-uyest="${uyest:-$uyest_if2:-$uyest_v1:-$uyest_if1}"
-tyest="${tyest:-$tyest_if2:-$tyest_v1:-$tyest_if1}"
+  y_parsed="$(parse_vn_line "$y_line")"
+  t_parsed="$(parse_vn_line "$t_line")"
+
+  dyest="$(cut -d'|' -f1 <<<"$y_parsed")"; uyest="$(cut -d'|' -f2 <<<"$y_parsed")"; tyest="$(cut -d'|' -f3 <<<"$y_parsed")"
+  dtoday="$(cut -d'|' -f1 <<<"$t_parsed")"; utoday="$(cut -d'|' -f2 <<<"$t_parsed")"; ttoday="$(cut -d'|' -f3 <<<"$t_parsed")"
+
+elif [ "${#day_lines[@]}" -eq 1 ]; then
+  # only today exists
+  t_line="${day_lines[-1]}"
+  t_parsed="$(parse_vn_line "$t_line")"
+  dtoday="$(cut -d'|' -f1 <<<"$t_parsed")"; utoday="$(cut -d'|' -f2 <<<"$t_parsed")"; ttoday="$(cut -d'|' -f3 <<<"$t_parsed")"
+
+  dyest=""; uyest=""; tyest=""   # biar fallback jadi N/A
+fi
+
+# ------------------------------
+# Ambil MONTH (ambil last line yang bukan "estimated")
+# ------------------------------
+m_line="$(
+  vnstat --style 0 -i "$iface" -m 2 2>/dev/null \
+  | awk -F'\\|' 'NF>=3 && $0 !~ /estimated/ {line=$0} END{print line}'
+)"
+
+if [ -n "$m_line" ]; then
+  m_parsed="$(parse_vn_line "$m_line")"
+  dmon="$(cut -d'|' -f1 <<<"$m_parsed")"
+  umon="$(cut -d'|' -f2 <<<"$m_parsed")"
+  tmon="$(cut -d'|' -f3 <<<"$m_parsed")"
+fi
+
+# ------------------------------
+# Fallback akhir (kalau masih kosong)
+# ------------------------------
+dmon="$(first_nonempty "${dmon:-}")"
+umon="$(first_nonempty "${umon:-}")"
+tmon="$(first_nonempty "${tmon:-}")"
+
+dtoday="$(first_nonempty "${dtoday:-}")"
+utoday="$(first_nonempty "${utoday:-}")"
+ttoday="$(first_nonempty "${ttoday:-}")"
+
+dyest="$(first_nonempty "${dyest:-}")"
+uyest="$(first_nonempty "${uyest:-}")"
+tyest="$(first_nonempty "${tyest:-}")"
 clear
 echo -e "\e[$banner_colour"
 figlet -f $ascii "$banner"
@@ -243,10 +276,48 @@ row_info "Domain"      "$domain"
 row_info "XrayCore"    "$current_version"
 row_info "Provider"    "$creditt"
 echo -e " \e[$line╘${BORDER}╛\e[m"
-echo -e "  \e[$text Traffic\e[0m       \e[${text}Today      Yesterday        Month   "
-echo -e "  \e[$text Download\e[0m   \e[${text}   $dtoday    $dyest       $dmon   \e[0m"
-echo -e "  \e[$text Upload\e[0m     \e[${text}   $utoday    $uyest       $umon   \e[0m"
-echo -e "  \e[$text Total\e[0m       \e[${text}  $ttoday    $tyest       [$tmon]  \e[0m "
+# --- kemaskan output table (ANSI color betul) ---
+
+# pastikan $text boleh jadi "1;37" atau "1;37m"
+if [ -n "${text:-}" ]; then
+  textc="${text%m}"               # buang trailing 'm' kalau ada
+  C1="$(printf '\033[%sm' "$textc")"
+  C0="$(printf '\033[0m')"
+else
+  C1=""; C0=""
+fi
+
+# fallback kalau kosong
+dtoday="${dtoday:-N/A}"; dyest="${dyest:-N/A}"; dmon="${dmon:-N/A}"
+utoday="${utoday:-N/A}"; uyest="${uyest:-N/A}"; umon="${umon:-N/A}"
+ttoday="${ttoday:-N/A}"; tyest="${tyest:-N/A}"; tmon="${tmon:-N/A}"
+
+# trim whitespace (bash)
+trim() { local s="$*"; s="${s#"${s%%[![:space:]]*}"}"; s="${s%"${s##*[![:space:]]}"}"; printf '%s' "$s"; }
+dtoday="$(trim "$dtoday")"; dyest="$(trim "$dyest")"; dmon="$(trim "$dmon")"
+utoday="$(trim "$utoday")"; uyest="$(trim "$uyest")"; umon="$(trim "$umon")"
+ttoday="$(trim "$ttoday")"; tyest="$(trim "$tyest")"; tmon="$(trim "$tmon")"
+
+# widths
+wlabel=10
+wcol=14
+tmon_br="[$tmon]"
+
+printf "  %s%-*s%s %s%*s %*s %*s%s\n" \
+  "$C1" "$wlabel" "Traffic" "$C0" \
+  "$C1" "$wcol" "Today" "$wcol" "Yesterday" "$wcol" "Month" "$C0"
+
+printf "  %s%-*s%s %s%*s %*s %*s%s\n" \
+  "$C1" "$wlabel" "Download" "$C0" \
+  "$C1" "$wcol" "$dtoday" "$wcol" "$dyest" "$wcol" "$dmon" "$C0"
+
+printf "  %s%-*s%s %s%*s %*s %*s%s\n" \
+  "$C1" "$wlabel" "Upload" "$C0" \
+  "$C1" "$wcol" "$utoday" "$wcol" "$uyest" "$wcol" "$umon" "$C0"
+
+printf "  %s%-*s%s %s%*s %*s %*s%s\n" \
+  "$C1" "$wlabel" "Total" "$C0" \
+  "$C1" "$wcol" "$ttoday" "$wcol" "$tyest" "$wcol" "$tmon_br" "$C0"
 echo -e " \e[$line╘═════════════════════════════════════════════════════════════╛\e[m"
 echo -e " \e[$text Ssh/Ovpn   V2ray   Vless   Vlessxtls   Trojan-Ws   Trojan-Tls \e[0m "    
 echo -e " \e[$below    $total_ssh         $vmess       $vless        $xtls           $trws           $trtls \e[0m "
@@ -254,7 +325,7 @@ echo -e " \e[$line╒═══════════════════�
 echo -e "  \e[$back_text                        \e[30m[\e[$box PANEL MENU\e[30m ]\e[1m                       \e[m"
 echo -e " \e[$line╘═════════════════════════════════════════════════════════════╛\e[m"
 echo -e "  \e[$number (•1)\e[m \e[$below XRAY VMESS & VLESS\e[m"
-echo -e "  \e[$number (•2)\e[m \e[$below TROJAN TCP & WS\e[m"
+echo -e "  \e[$number (•2)\e[m \e[$below TROJAN XRAY & WS\e[m"
 echo -e "  \e[$number (•3)\e[m \e[$below SSHWS & OPENVPN\e[m" 
 echo -e "  \e[$number (•4)\e[m \e[$below NOOBZVPN MENU\e[m" 
 echo -e " \e[$line╒═════════════════════════════════════════════════════════════╕\e[m"
