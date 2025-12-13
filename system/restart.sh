@@ -27,11 +27,9 @@ echo -e "  $green[${white}5${green}] ${green} Restart OpenVPN$NC"
 echo -e "  $green[${white}6${green}] ${green} Restart Squid$NC"
 echo -e "  $green[${white}7${green}] ${green} Restart Restart Nginx$NC"
 echo -e "  $green[${white}8${green}] ${green} Restart Xray Core$NC"
-echo -e "  $green[${white}9${green}] ${green} Restart Trojan Ws & Tcp Tls$NC"
-echo -e "  $green[${white}10${green}] ${green}Restart Badvpn$NC"
-echo -e "  $green[${white}11${green}] ${green}Restart OHP $NC"
-echo -e "  $green[${white}12${green}] ${green}Restart WebSocket$NC"
-echo -e "  $green[${white}13${green}] ${green}Restart SlowDNS$NC"
+echo -e "  $green[${white}9${green}] ${green} Restart Badvpn$NC"
+echo -e "  $green[${white}10${green}] ${green}Restart OHP $NC"
+echo -e "  $green[${white}11${green}] ${green}Restart WebSocket$NC"
 echo -e "${blue}══════════════════════════════════════${NC}"
 echo -e "\\E[0;46;30m        x)   MENU                     ${NC}"
 echo -e "${blue}══════════════════════════════════════${NC}"
@@ -53,25 +51,12 @@ case $Restart in
                 /etc/init.d/squid restart
 				systemctl restart xray
 				systemctl restart xray@none
-				systemctl restart xray@tcp
-				systemctl restart xray@vless
-				systemctl restart xray@vlessc
-				systemctl restart xray@vlessnone
-				systemctl restart xray@vmess
-				systemctl restart xray@vmessc
-				systemctl restart xray@vmessnone
-				systemctl restart xray@trojan
-				systemctl restart xray@trojannone
+        systemctl restart xray@config
 				systemctl restart ws-http
 				systemctl restart ws-https
 				systemctl restart ohp
 				systemctl restart ohpd
 				systemctl restart ohps
-			    systemctl restart cdn-dropbear
-				systemctl restart cdn-ovpn
-				systemctl restart cdn-ssl
-    				systemctl restart client-sldns
-				systemctl restart server-sldns
                 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7100 --max-clients 1000
                 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7200 --max-clients 1000
                 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000
@@ -82,7 +67,7 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
+				read -n 1 -s -r -p "Press any key to back on main menu"
 				menu
                 ;;
                 2)
@@ -95,8 +80,8 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 3)
                 clear
@@ -108,8 +93,8 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 4)
                 clear
@@ -121,8 +106,8 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 5)
                 clear
@@ -136,8 +121,8 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 6)
                 clear
@@ -149,8 +134,8 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 7)
                 clear
@@ -162,19 +147,14 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
 				8)
                 clear
 				systemctl restart xray
 				systemctl restart xray@none
-				systemctl restart xray@vless
-				systemctl restart xray@vlessc
-				systemctl enable xray@vlessnone
-				systemctl restart xray@vmess
-				systemctl restart xray@vmessc
-				systemctl restart xray@vmessnone
+        systemctl restart xray@config
                 echo -e ""
                 echo -e "======================================"
                 echo -e ""
@@ -182,25 +162,10 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
-				9)
-				clear
-				systemctl restart xray@tcp
-				systemctl restart xray@trojan
-				systemctl restart xray@trojannone
-                echo -e ""
-                echo -e "======================================"
-                echo -e ""
-                echo -e "      \e[0;32mAll Trojan Service Restart\e[0m      "
-                echo -e ""
-                echo -e "======================================"
-				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
-                ;;
-                10)
+                9)
                 clear
                 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7100 --max-clients 500
                 screen -dmS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7200 --max-clients 500
@@ -218,10 +183,10 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
-				11)
+				10)
 				clear
                 systemctl restart ohp
 				systemctl restart ohpd
@@ -233,16 +198,13 @@ case $Restart in
                 echo -e ""
                 echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
 				;;
-				12)
+				11)
 				clear
 				systemctl restart ws-http
 				systemctl restart ws-https
-                systemctl restart cdn-dropbear
-				systemctl restart cdn-ovpn
-				systemctl restart cdn-ssl
                 echo -e ""
                 echo -e "======================================"
                 echo -e ""
@@ -250,22 +212,8 @@ case $Restart in
                 echo -e ""
 	            echo -e "======================================"
 				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
-                ;;
-				13)
-				clear
-				systemctl restart client-sldns
-				systemctl restart server-sldns
-                echo -e ""
-                echo -e "======================================"
-                echo -e ""
-                echo -e "      \e[0;32mSlowDNS Service Restarted\e[0m     "
-                echo -e ""
-	            echo -e "======================================"
-				echo ""
-				read -n 1 -s -r -p "Press any key to back on menu"
-				menu
+				read -n 1 -s -r -p "Press any key to back on restart menu"
+				restart
                 ;;
                 x)
                 clear
