@@ -299,7 +299,7 @@ else
 echo -e " Xray Vless Xtls Vision  : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@tcp.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -308,7 +308,7 @@ else
 echo -e " Xray Trojan Tcp tls     : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@vless.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -317,7 +317,7 @@ else
 echo -e " Xray Vless Ws Tls       : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@xhttptls.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -326,7 +326,7 @@ else
 echo -e " Xray Vless Xhttp Tls    : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@upgradetls.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -335,7 +335,7 @@ else
 echo -e " HttpUpgrade Ws Tls      : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@vmess.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -344,7 +344,7 @@ else
 echo -e " Xray Vmess Ws Tls       : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@trojan.service --no-page)"
+status="$(systemctl show xray@config.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -353,7 +353,7 @@ else
 echo -e " Xray Trojan Ws Tls      : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@vlessnone.service --no-page)"
+status="$(systemctl show xray@none.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -362,7 +362,7 @@ else
 echo -e " Xray Vless Ws None      : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@xhttp.service --no-page)"
+status="$(systemctl show xray@none.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -371,7 +371,7 @@ else
 echo -e " Xray Vless Xhttp None   : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@upgradenone.service --no-page)"
+status="$(systemctl show xray@none.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -380,7 +380,7 @@ else
 echo -e " HttpUpgrade Ws None     : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@vmessnone.service --no-page)"
+status="$(systemctl show xray@none.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
@@ -389,7 +389,7 @@ else
 echo -e " Xray Vmess Ws None      : "$red"not running (Error)"$NC" "
 fi
 
-status="$(systemctl show xray@trojannone.service --no-page)"
+status="$(systemctl show xray@none.service --no-page)"
 status_text=$(echo "${status}" | grep 'ActiveState=' | cut -f2 -d=)
 if [ "${status_text}" == "active" ]
 then
