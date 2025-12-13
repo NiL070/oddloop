@@ -127,7 +127,7 @@ cat > /usr/local/etc/xray/config.json << END
         "network": "tcp",
         "security": "tls",
         "tlsSettings": {
-          "alpn": ["http/1.1"],
+          "alpn": ["h2", "http/1.1"],
           "certificates": [
             {
               "certificateFile": "/usr/local/etc/xray/xray.crt",
@@ -150,9 +150,6 @@ cat > /usr/local/etc/xray/config.json << END
           }
         ],
         "fallbacks": [
-          {
-            "dest": 81
-          }
         ]
       },
       "streamSettings": {
@@ -262,7 +259,7 @@ cat > /usr/local/etc/xray/config.json << END
           {
             "id": "${uuid2}"
 #xray-vless-xhttp-tls 
-          }
+          }           
         ],
         "decryption": "none"
       },
@@ -270,25 +267,23 @@ cat > /usr/local/etc/xray/config.json << END
         "network": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "alpn": [
-            "http/1.1"
-          ],
+          "alpn": [ "h2", "http/1.1" ],
           "certificates": [
             {
               "certificateFile": "/usr/local/etc/xray/xray.crt",
               "keyFile": "/usr/local/etc/xray/xray.key"
             }
-          ]
+          ],
+          "minVersion": "1.2"
         },
         "xhttpSettings": {
-          "path": "/xhttp",
-          "headers": {},
-          "scMaxBufferedPosts": 30,
-          "scMaxEachPostBytes": 1000000,
-          "noSSEHeader": false,
-          "xPaddingBytes": "100-1000",
-          "mode": "auto"
-        }
+        "path": "/xhttp",
+        "headers": {},
+        "scMaxBufferedPosts": 8,
+        "scMaxEachPostBytes": "32768-262144",
+        "noSSEHeader": true,
+        "mode": "auto"
+       }
       }
     }
   ],
@@ -326,20 +321,26 @@ cat > /usr/local/etc/xray/config.json << END
         "outboundTag": "blocked"
       },
       {
-        "inboundTag": ["api"],
+        "inboundTag": [
+          "api"
+        ],
         "outboundTag": "api",
         "type": "field"
       },
       {
         "type": "field",
         "outboundTag": "blocked",
-        "protocol": ["bittorrent"]
+        "protocol": [
+          "bittorrent"
+        ]
       }
     ]
   },
   "stats": {},
   "api": {
-    "services": ["StatsService"],
+    "services": [
+      "StatsService"
+    ],
     "tag": "api"
   },
   "policy": {
