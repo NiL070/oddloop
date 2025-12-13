@@ -14,6 +14,8 @@ export line=$(cat /etc/line)
 # // BACKGROUND TEXT COLOUR
 export back_text=$(cat /etc/back)
 
+MYIP=$(curl -sS ipv4.icanhazip.com)
+
 clear
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 echo -e   "  \e[$back_text           \e[30m[\e[$box CREATE USER SSH & OPENVPN\e[30m ]\e[1m               \e[m"
