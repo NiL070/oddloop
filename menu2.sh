@@ -1,30 +1,17 @@
 #!/bin/bash
-#wget https://github.com/${GitUser}/
+
 GitUser="NiL070"
 
-#IZIN SCRIPT
-MYIP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
-clear
-
 # Detail VPS
+IPVPS=$(curl -sS ipv4.icanhazip.com)
+domain=$(cat /usr/local/etc/xray/domain)
+ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
 OS=$(hostnamectl 2>/dev/null | awk -F': ' '/Operating System/ {print $2; exit}')
 OS2=$(lsb_release -ds)
-domain=$(cat /usr/local/etc/xray/domain)
-ISP=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 CITY=$(curl -s ipinfo.io/city)
 WKT=$(curl -s ipinfo.io/timezone)
-IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
 IPV6=$(curl -s -6 ipv6.icanhazip.com)
-
-# if no IPv6
-IPVPS=$(curl -s ipv4.icanhazip.com || curl -s ipinfo.io/ip || curl -s ifconfig.me)
-IPV6=$(curl -s -6 ipv6.icanhazip.com)
-
-if [ -z "$IPV6" ]; then
-    IPV6="\e[32m(IPv4 only)\e[0m"
-else
-    IPV6="\e[32m($IPV6)\e[0m"
-fi
+clear
 
 # detail cpu ram
 cname=$(awk -F: '/model name/ {name=$2} END {print name}' /proc/cpuinfo)
@@ -60,43 +47,6 @@ clear
 # OS Uptime
 uptime="$(uptime -p | cut -d " " -f 2-10)"
 
-# USERNAME
-rm -f /usr/bin/user
-username=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $2}')
-echo "$username" >/usr/bin/user
-
-# Order ID
-rm -f /usr/bin/ver
-user=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $3}')
-echo "$user" >/usr/bin/ver
-
-# validity
-rm -f /usr/bin/e
-valid=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $4}')
-echo "$valid" >/usr/bin/e
-
-# DETAIL ORDER
-username=$(cat /usr/bin/user)
-oid=$(cat /usr/bin/ver)
-exp=$(cat /usr/bin/e)
-clear
-version=$(cat /home/ver)
-ver=$( curl https://raw.githubusercontent.com/${GitUser}/version/main/version.conf )
-clear
-
-# CEK UPDATE
-Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
-Info1="${Green_font_prefix}($version)${Font_color_suffix}"
-Info2="${Green_font_prefix}(LATEST VERSION)${Font_color_suffix}"
-Error="Version ${Green_font_prefix}[$ver]${Font_color_suffix} available${Red_font_prefix}[Please Update]${Font_color_suffix}"
-version=$(cat /home/ver)
-new_version=$( curl https://raw.githubusercontent.com/${GitUser}/version/main/version.conf | grep $version )
-#Status Version
-if [ $version = $new_version ]; then
-stl="${Info2}"
-else
-stl="${Error}"
-fi
 clear
 
 # Getting CPU Information
@@ -104,19 +54,6 @@ cpu_usage1="$(ps aux | awk 'BEGIN {sum=0} {sum+=$3}; END {print sum}')"
 cpu_usage="$((${cpu_usage1/\.*/} / ${corediilik:-1}))"
 cpu_usage+=" %"
 
-# STATUS EXPIRED ACTIVE
-Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[4$below" && Font_color_suffix="\033[0m"
-Info="${Green_font_prefix}(Active)${Font_color_suffix}"
-Error="${Green_font_prefix}${Font_color_suffix}${Red_font_prefix}[EXPIRED]${Font_color_suffix}"
-
-today=$(date -d "0 days" +"%Y-%m-%d")
-Exp1=$(curl https://raw.githubusercontent.com/${GitUser}/allow/main/ipvps.conf | grep $MYIP | awk '{print $4}')
-if [[ $today < $Exp1 ]]; then
-    sts="${Info}"
-else
-    sts="${Error}"
-fi
-echo -e "\e[32mloading...\e[0m"
 clear
 
 # Xray-Core Version
