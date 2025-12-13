@@ -35,10 +35,10 @@ export back_text=$(cat /etc/back)
 export number=$(cat /etc/number)
 
 # // TOTAL ACC CREATE  TROJAN
-export total=$(grep -c -E "^#trx " "/usr/local/etc/xray/tcp.json")
+export total=$(grep -c -E "^#trx " "/usr/local/etc/xray/config.json")
 
 # // TOTAL ACC CREATE  TROJAN WS TLS
-export total2=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
+export total2=$(grep -c -E "^#trws " "/usr/local/etc/xray/config.json")
 if [[ "$IP" = "" ]]; then
     domain=$(cat /usr/local/etc/xray/domain)
 else
@@ -78,7 +78,7 @@ export harini=`date -d "0 days" +"%Y-%m-%d"`
 export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 
 sed -i '/#trojan$/a\#trx '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/tcp.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 
 echo -e "### $user $exp $harini $uuid" >> /usr/local/etc/xray/akunxtr.conf
 
@@ -165,7 +165,7 @@ fi
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#trojan$/a\#trx '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/tcp.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 
 echo -e "### $user $exp $harini $uuid" >> /usr/local/etc/xray/akunxtr.conf
 
@@ -226,9 +226,9 @@ export user=$(grep -E "^### " "/usr/local/etc/xray/akunxtr.conf" | cut -d ' ' -f
 export exp=$(grep -E "^### " "/usr/local/etc/xray/akunxtr.conf" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 
 sed -i "/^### $user $exp $harini $uuid/d" /usr/local/etc/xray/akunxtr.conf
-sed -i "/^#trx $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/tcp.json
+sed -i "/^#trx $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
 
-systemctl restart xray@tcp
+systemctl restart xray@config
 service cron restart
 
 clear
@@ -282,9 +282,9 @@ export exp3=$(($exp2 + $masaaktif))
 export exp4=`date -d "$exp3 days" +"%Y-%m-%d"`
 
 sed -i "s/### $user $exp $harini $uuid/### $user $exp4 $harini $uuid/g" /usr/local/etc/xray/akunxtr.conf
-sed -i "s/#trx $user $exp $harini $uuid/#trx $user $exp4 $harini $uuid/g" /usr/local/etc/xray/tcp.json
+sed -i "s/#trx $user $exp $harini $uuid/#trx $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
 
-systemctl restart xray@tcp
+systemctl restart xray@config
 service cron restart
 
 clear
@@ -408,7 +408,7 @@ echo -e   "  \e[$back_text          \e[30m[\e[$box CREATE USER XRAY TROJAN WS TL
 echo -e   "  \e[$line═══════════════════════════════════════════════════════\e[m"
 until [[ $user =~ ^[a-zA-Z0-9_]+$ && ${user_EXISTS} == '0' ]]; do
 		read -rp "   Password: " -e user
-		user_EXISTS=$(grep -w $user /usr/local/etc/xray/trojan.json | wc -l)
+		user_EXISTS=$(grep -w $user /usr/local/etc/xray/config.json | wc -l)
 
 		if [[ ${user_EXISTS} == '1' ]]; then
 			echo ""
@@ -434,11 +434,11 @@ export harini=`date -d "0 days" +"%Y-%m-%d"`
 export exp=`date -d "$masaaktif days" +"%Y-%m-%d"`
 
 sed -i '/#xray-trojan-tls$/a\#trws '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojan.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-trojan-nontls$/a\#trws '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
-systemctl restart xray@trojan
+systemctl restart xray@config
 systemctl restart xray@none
 
 export trojanlink="trojan://${user}@${sts}${domain}:80?host=$sni&security=none&type=ws&path=${patchnone}#${user}";
@@ -538,11 +538,11 @@ fi
 export harini=`date -d "0 days" +"%Y-%m-%d"`
 
 sed -i '/#xray-trojan-tls$/a\#trws '"$user $exp $harini $uuid"'\
-},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/trojan.json
+},{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/config.json
 sed -i '/#xray-trojan-nontls$/a\#trws '"$user $exp $harini $uuid"'\
 },{"id": "'""$uuid""'","password": "'""$user""'","email": "'""$user""'"' /usr/local/etc/xray/none.json
 
-systemctl restart xray@trojan
+systemctl restart xray@config
 systemctl restart xray@none
 
 export trojanlink="trojan://${user}@${sts}${domain}:80?path=$patchnone&security=none&host=$sni&type=ws#${user}"
@@ -579,7 +579,7 @@ trojaan
 
 function menu9 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		echo ""
 		echo "You have no existing clients!"
@@ -592,7 +592,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 	echo " Press CTRL+C to return"
 	echo " ==============================="
 	echo "     No  Expired   User"
-	grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -600,17 +600,17 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 			read -rp "Select one client [1-${NUMBER_OF_CLIENTS}]: " CLIENT_NUMBER
 		fi
 	done
-export harini=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export CLIENT_NAME=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2-3 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export CLIENT_NAME=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 
-sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/trojan.json
+sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/config.json
 sed -i "/^#trws $user $exp $harini $uuid/,/^},{/d" /usr/local/etc/xray/none.json
 
+systemctl restart xray@config
 systemctl restart xray@none
-systemctl restart xray@trojan
 service cron restart
 
 clear
@@ -626,7 +626,7 @@ trojaan
 
 function menu10 () {
 clear
-NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -640,7 +640,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -649,10 +649,10 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 		fi
 	done
 read -p "Expired (days): " masaaktif
-export harini=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
-export user=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
 export now=$(date +%Y-%m-%d)
 export d1=$(date -d "$exp" +%s)
 export d2=$(date -d "$now" +%s)
@@ -660,7 +660,7 @@ export exp2=$(( (d1 - d2) / 86400 ))
 export exp3=$(($exp2 + $masaaktif))
 export exp4=`date -d "$exp3 days" +"%Y-%m-%d"`
 
-sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/trojan.json
+sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/config.json
 sed -i "s/#trws $user $exp $harini $uuid/#trws $user $exp4 $harini $uuid/g" /usr/local/etc/xray/none.json
 
 service cron restart
@@ -681,7 +681,7 @@ function menu11 () {
 clear
 trnone="$(cat ~/log-install.txt | grep -w "Xray Trojan Ws None Tls" | cut -d: -f2|sed 's/ //g')"
 trws="$(cat ~/log-install.txt | grep -w "Trojan Ws Tls" | cut -d: -f2|sed 's/ //g')"
-NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
+NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/config.json")
 	if [[ ${NUMBER_OF_CLIENTS} == '0' ]]; then
 		clear
 		echo ""
@@ -695,7 +695,7 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 	echo "Select the existing client you want to renew"
 	echo " Press CTRL+C to return"
 	echo -e "==============================="
-	grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2-3 | nl -s ') '
+	grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2-3 | nl -s ') '
 	until [[ ${CLIENT_NUMBER} -ge 1 && ${CLIENT_NUMBER} -le ${NUMBER_OF_CLIENTS} ]]; do
 		if [[ ${CLIENT_NUMBER} == '1' ]]; then
 			read -rp "Select one client [1]: " CLIENT_NUMBER
@@ -705,10 +705,10 @@ NUMBER_OF_CLIENTS=$(grep -c -E "^#trws " "/usr/local/etc/xray/trojan.json")
 	done
 export patchtls=/trojanwstls
 export patchnone=/trojanwsntls
-export user=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
-export harini=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
-export exp=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
-export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/trojan.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
+export user=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 2 | sed -n "${CLIENT_NUMBER}"p)
+export harini=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 4 | sed -n "${CLIENT_NUMBER}"p)
+export exp=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 3 | sed -n "${CLIENT_NUMBER}"p)
+export uuid=$(grep -E "^#trws " "/usr/local/etc/xray/config.json" | cut -d ' ' -f 5 | sed -n "${CLIENT_NUMBER}"p)
 
 export trojanlink1="trojan://${user}@${sts}${domain}:443?path=$patchtls&security=tls&host=bug.com&type=ws&sni=$sni#${user}"
 export trojanlink="trojan://${user}@${sts}${domain}:80?path=$patchnone&security=none&host=$sni&type=ws#${user}"
@@ -745,7 +745,7 @@ trojaan
 function menu12 () {
 clear
 echo -n > /tmp/other.txt
-data=( `cat /usr/local/etc/xray/trojan.json | grep '^#trws' | cut -d ' ' -f 2`);
+data=( `cat /usr/local/etc/xray/config.json | grep '^#trws' | cut -d ' ' -f 2`);
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
 echo -e "\\E[0;44;37m      ⇱ XRAY Trojan WS User Login  ⇲      \E[0m"
 echo -e "\033[0;34m══════════════════════════════════════════\033[0m"
