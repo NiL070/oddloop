@@ -78,21 +78,22 @@ wget -O installer.sh https://raw.githubusercontent.com/NiL070/oddloop/main/insta
    - DDOS Dflate              : [ON]
    - IPtables                 : [ON]
    - Auto-Reboot              : [ON] - 5.00 AM
-   - IPv6                     : [OFF]
+   - IPv6/v4 Menu             : [OFF]
    - Auto-Remove-Expired      : [ON]
    - Auto-Backup-Account      : [ON]
-   - Fully automatic script
+   - BBR Manager              : [ON]
+   - Change Port Services     : [ON]
+   - Change Dropbear Version  : [ON]
    - Udp Custom [ Manually Install ]
-   - Noobzvpn [ Manually Install ]
+   - Noobzvpn   [ Manually Install ]
+   - Fully automatic script
    - VPS settings
    - Admin Control
-   - Change port
-   - Full Orders For Various Services
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 <p align="center">
-  <a><img src="https://img.shields.io/badge/Copyright%20©-Onyx%20AutoScriptVPN%202023.%20All%20rights%20reserved...-blueviolet.svg" style="max-width:200%;">
+  <a><img src="https://img.shields.io/badge/Copyright%20©-NiLphreakz%20AutoScriptVPN%202023.%20All%20rights%20reserved...-blueviolet.svg" style="max-width:200%;">
     </p>
    </p>
