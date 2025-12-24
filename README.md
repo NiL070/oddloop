@@ -22,8 +22,8 @@
 1. Minimum 512MB
 2. Support Debian 10 & Ubuntu 20.04 Above Old/Latest OS
 3. Recommended Debian for fast installation.
-4. Tested On Vps Digital Ocean
-5. Remake old script for 2025-2026
+4. Tested On Vps Digital Ocean/Myklnet/Shinjiru/Pq Hosting
+5. Remake old script
 
 
  🔰JUST COPY PASTE THIS COMMAND TO YOUR VPS🔰
