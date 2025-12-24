@@ -81,6 +81,8 @@ wget -O installer.sh https://raw.githubusercontent.com/NiL070/oddloop/main/insta
    - Auto-Remove-Expired      : [ON]
    - Auto-Backup-Account      : [ON]
    - Fully automatic script
+   - Udp Custom [ Manually Install ]
+   - Noobzvpn [ Manually Install ]
    - VPS settings
    - Admin Control
    - Change port
