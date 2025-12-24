@@ -20,9 +20,10 @@
   
 ## ⚠️ System Requirements ⚠️
 1. Minimum 512MB
-2. Recommended Debian for fast installation.
-3. Tested On Vps Digital Ocean
-4. Remake old script for 2025-2026
+2. Support Debian 10 & Ubuntu 20.04 Above Old/Latest OS
+3. Recommended Debian for fast installation.
+4. Tested On Vps Digital Ocean
+5. Remake old script for 2025-2026
 
 
  🔰JUST COPY PASTE THIS COMMAND TO YOUR VPS🔰
