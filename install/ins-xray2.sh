@@ -287,7 +287,7 @@ cat > /usr/local/etc/xray/config.json << END
         "xhttpSettings": {
         "path": "/xhttp",
         "headers": {},
-        "mode": "packet-up",
+        "mode": "auto",
         "noSSEHeader": false,
         "scMaxEachPostBytes": "500000-1000000",
         "scMinPostsIntervalMs": "10-50",
