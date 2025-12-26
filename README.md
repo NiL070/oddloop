@@ -70,7 +70,7 @@ wget -O installer.sh https://raw.githubusercontent.com/NiL070/oddloop/main/insta
 - Vless None Tls              : 8080
 - Vmess None Tls              : 8880
 
-NOTE : PLEASE REBOOT YOUR VPS IF XHTTP SHOWS RUNNING BUT CAN'T CONNECT ON THE VPN APPS ( FOR FIRST INSTALLATION ONLY )
+NOTE : PLEASE REBOOT YOUR VPS IF XHTTP TLS SHOWS RUNNING BUT CAN'T CONNECT ON THE VPN APPS ( FOR FIRST INSTALLATION ONLY )
 
        
  Server Information & Other Features:-
